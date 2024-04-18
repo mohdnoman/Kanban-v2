@@ -47,7 +47,9 @@ const ItemForm = ({ onAddItem, onClose, CID }) => {
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
               />
-              <InputRightElement children={<Button onClick={() => setDeadline('')}>Clear</Button>} />
+              <InputRightElement>
+                <Button onClick={() => setDeadline("")}>Clear</Button>
+              </InputRightElement>
             </InputGroup>
           </FormControl>
         </ModalBody>
