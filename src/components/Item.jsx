@@ -1,7 +1,16 @@
 import React from "react";
 import { Box, Text, CloseButton } from "@chakra-ui/react";
+import { useDrag } from 'react-dnd';
 
 const Item = ({ item, onDelete }) => {
+  const [{ isDragging }, drag] = useDrag({
+    type: 'ITEM',
+    item: { id: item.id, type: 'ITEM' },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  });
+
   const handleDelete = () => {
     onDelete(item.id);
   };
@@ -15,6 +24,12 @@ const Item = ({ item, onDelete }) => {
       boxShadow="sm"
       mb="2"
       position="relative"
+      ref={drag}
+      opacity={isDragging ? 0.5 : 1}
+      style={{ cursor: 'move', // Apply cursor style
+               border: '2px solid transparent', // Add border
+               borderColor: isDragging ? 'gray.400' : 'transparent' // Change border color while dragging
+            }}
     >
       <Text className="text- text-stone-600 text-lg">{item.title}</Text>
       <Text fontSize="sm" color="gray.500">

@@ -1,10 +1,13 @@
 "use client"
+// "use client"
 import React, { useState, useEffect } from 'react';
 import { Button, ChakraProvider, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, useDisclosure } from '@chakra-ui/react';
 import theme from './theme';
 import Container from '../components/Container';
 import ContainerForm from '../components/ContainerForm';
 import { v4 as uuidv4 } from 'uuid';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const Home = () => {
   const [containers, setContainers] = useState(() => {
@@ -28,34 +31,14 @@ const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddItem = (newItem) => {
-    if (typeof newItem === 'object' && newItem !== null) {
-      if (!Array.isArray(items)) {
-        setItems([newItem]);
-      } else {
-        if (
-          newItem.hasOwnProperty('id') &&
-          newItem.hasOwnProperty('title') &&
-          newItem.hasOwnProperty('deadline') &&
-          newItem.hasOwnProperty('CID')
-        ) {
-          newItem.id = String(Date.now());
-          setItems([...items, newItem]);
-        } else {
-          console.error('New item is missing required properties.');
-        }
-      }
-    } else {
-      console.error('New item is not an object.');
-    }
+    newItem = { ...newItem, id: uuidv4() };
+    setItems([...items, newItem]);
   };
 
   const handleDeleteItem = (itemIdToDelete) => {
-    console.log('Deleting item with ID:', itemIdToDelete);
     const updatedItems = items.filter(item => item.id !== itemIdToDelete);
-    console.log('Updated items:', updatedItems);
     setItems(updatedItems);
-};
-
+  };
 
   const handleAddContainer = (title) => {
     const newCID = uuidv4();
@@ -69,43 +52,56 @@ const Home = () => {
     setContainers(updatedContainers);
   };
 
+  const handleDropItem = (item, targetCID) => {
+    const updatedItems = items.map((i) => {
+      if (i.id === item.id) {
+        return { ...i, CID: targetCID };
+      }
+      return i;
+    });
+    setItems(updatedItems);
+  };
+
   return (
     <ChakraProvider theme={theme}>
-      <main className="min-h-screen  flex-col items-center justify-center p-4">
-        <div className="flex felx-wrap justify-between items-center p-4">
-          <Text className="text-3xl text-stone-400 font-sans">Kanban Board</Text>
-          <div>
-            <Button type="button" className="text-stone-300 bg-stone-700 p-2 px-4 rounded-xl" onClick={onOpen}>Add Container</Button>
+      <DndProvider backend={HTML5Backend}>
+        <main className="min-h-screen  flex-col items-center justify-center p-4">
+          <div className="flex felx-wrap justify-between items-center p-4">
+            <Text className="text-3xl text-stone-400 font-sans">Kanban Board</Text>
+            <div>
+              <Button type="button" className="text-stone-300 bg-stone-700 p-2 px-4 rounded-xl" onClick={onOpen}>Add Container</Button>
+            </div>
           </div>
-        </div>
-        <section className="flex justify-center p-6 gap-4 pt-10">
-          {containers.length > 0 ? (
-            containers.map((container) => (
-              <Container
-                key={container.CID}
-                items={items}
-                CID={container.CID}
-                title={container.title}
-                setItems={setItems}
-                handleAddItem={handleAddItem}
-                onDeleteItem={handleDeleteItem} 
-                handleDeleteContainer={handleDeleteContainer}
-              />
-            ))
-          ) : (
-            <Text>Add containers to manage your tasks</Text>
-          )}
-        </section>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Add Container</ModalHeader>
-            <ModalBody>
-              <ContainerForm onAddContainer={handleAddContainer} onClose={onClose} />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </main>
+          <section className="flex justify-center p-6 gap-4 pt-10">
+            {containers.length > 0 ? (
+              containers.map((container) => (
+                <Container
+                  key={container.CID}
+                  items={items}
+                  CID={container.CID}
+                  title={container.title}
+                  setItems={setItems}
+                  handleAddItem={handleAddItem}
+                  onDeleteItem={handleDeleteItem}
+                  handleDeleteContainer={handleDeleteContainer}
+                  onDropItem={handleDropItem}
+                />
+              ))
+            ) : (
+              <Text>Add containers to manage your tasks</Text>
+            )}
+          </section>
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Add Container</ModalHeader>
+              <ModalBody>
+                <ContainerForm onAddContainer={handleAddContainer} onClose={onClose} />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </main>
+      </DndProvider>
     </ChakraProvider>
   );
 }
