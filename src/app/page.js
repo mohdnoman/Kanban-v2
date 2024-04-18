@@ -9,12 +9,26 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const Home = () => {
-  const [containers, setContainers] = useState(() => JSON.parse(localStorage.getItem('containers')) || [{ title: 'To Do', CID: '123456765432' }]);
-  const [items, setItems] = useState(() => JSON.parse(localStorage.getItem('items')) || []);
+  const [containers, setContainers] = useState([{ title: 'To Do', CID: '123456765432' }]);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const storedContainers = JSON.parse(localStorage.getItem('containers'));
+    if (storedContainers) {
+      setContainers(storedContainers);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('containers', JSON.stringify(containers));
   }, [containers]);
+
+  useEffect(() => {
+    const storedItems = JSON.parse(localStorage.getItem('items'));
+    if (storedItems) {
+      setItems(storedItems);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('items', JSON.stringify(items));
