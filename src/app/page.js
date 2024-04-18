@@ -9,7 +9,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const Home = () => {
-  const [containers, setContainers] = useState([{ title: 'To Do', CID: '123456765432' }]);
+  const [containers, setContainers] = useState([]);
   const [items, setItems] = useState([]);
 
   useEffect(() => {
