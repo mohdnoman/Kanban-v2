@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import { Box, Text, CloseButton } from "@chakra-ui/react";
 import { useDrag } from 'react-dnd';

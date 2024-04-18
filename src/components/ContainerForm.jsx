@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, Button, FormControl, FormLabel, Input } from '@chakra-ui/react';
 
