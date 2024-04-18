@@ -1,5 +1,4 @@
 "use client"
-// "use client"
 import React, { useState, useEffect } from 'react';
 import { Button, ChakraProvider, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, useDisclosure } from '@chakra-ui/react';
 import theme from './theme';
@@ -10,15 +9,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const Home = () => {
-  const [containers, setContainers] = useState(() => {
-    const savedContainers = localStorage.getItem('containers');
-    return savedContainers ? JSON.parse(savedContainers) : [{ title: 'To Do', CID: '123456765432' }];
-  });
-
-  const [items, setItems] = useState(() => {
-    const savedItems = localStorage.getItem('items');
-    return savedItems ? JSON.parse(savedItems) : [];
-  });
+  const [containers, setContainers] = useState(() => JSON.parse(localStorage.getItem('containers')) || [{ title: 'To Do', CID: '123456765432' }]);
+  const [items, setItems] = useState(() => JSON.parse(localStorage.getItem('items')) || []);
 
   useEffect(() => {
     localStorage.setItem('containers', JSON.stringify(containers));
@@ -36,36 +28,27 @@ const Home = () => {
   };
 
   const handleDeleteItem = (itemIdToDelete) => {
-    const updatedItems = items.filter(item => item.id !== itemIdToDelete);
-    setItems(updatedItems);
+    setItems(items.filter(item => item.id !== itemIdToDelete));
   };
 
   const handleAddContainer = (title) => {
     const newCID = uuidv4();
-    const newContainer = { title, CID: newCID };
-    setContainers([...containers, newContainer]);
+    setContainers([...containers, { title, CID: newCID }]);
     onClose();
   };
 
   const handleDeleteContainer = (CIDToDelete) => {
-    const updatedContainers = containers.filter(container => container.CID !== CIDToDelete);
-    setContainers(updatedContainers);
+    setContainers(containers.filter(container => container.CID !== CIDToDelete));
   };
 
   const handleDropItem = (item, targetCID) => {
-    const updatedItems = items.map((i) => {
-      if (i.id === item.id) {
-        return { ...i, CID: targetCID };
-      }
-      return i;
-    });
-    setItems(updatedItems);
+    setItems(items.map(i => (i.id === item.id ? { ...i, CID: targetCID } : i)));
   };
 
   return (
     <ChakraProvider theme={theme}>
       <DndProvider backend={HTML5Backend}>
-        <main className="min-h-screen  flex-col items-center justify-center p-4">
+        <main className="min-h-screen flex-col items-center justify-center p-4">
           <div className="flex felx-wrap justify-between items-center p-4">
             <Text className="text-3xl text-stone-400 font-sans">Kanban Board</Text>
             <div>
@@ -74,7 +57,7 @@ const Home = () => {
           </div>
           <section className="flex justify-center p-6 gap-4 pt-10">
             {containers.length > 0 ? (
-              containers.map((container) => (
+              containers.map(container => (
                 <Container
                   key={container.CID}
                   items={items}

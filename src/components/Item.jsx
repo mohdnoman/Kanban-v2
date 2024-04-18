@@ -25,13 +25,9 @@ const Item = ({ item, onDelete }) => {
       mb="2"
       position="relative"
       ref={drag}
-      opacity={isDragging ? 0.5 : 1}
-      style={{ cursor: 'move', // Apply cursor style
-               border: '2px solid transparent', // Add border
-               borderColor: isDragging ? 'gray.400' : 'transparent' // Change border color while dragging
-            }}
+      style={{ cursor: "grab", border: "2px solid transparent" }}
     >
-      <Text className="text- text-stone-600 text-lg">{item.title}</Text>
+      <Text className=" text-stone-600 text-lg">{item.title}</Text>
       <Text fontSize="sm" color="gray.500">
         Deadline: {new Date(item.deadline).toLocaleDateString()}
       </Text>
@@ -41,7 +37,7 @@ const Item = ({ item, onDelete }) => {
         top="1"
         right="1"
         size="sm"
-        onClick={handleDelete} 
+        onClick={handleDelete}
       />
     </Box>
   );

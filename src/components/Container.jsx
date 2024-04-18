@@ -1,12 +1,12 @@
-// "use client"
+"use client"
 import React, { useState } from "react";
 import { Box, Text, Button, CloseButton } from "@chakra-ui/react";
 import ItemForm from "./ItemForm";
 import Item from "./Item";
-import { useDrop } from 'react-dnd';
+import { useDrop, useDrag } from 'react-dnd';
 
 const Container = ({ title, items, CID, setItems, handleDeleteContainer, onDeleteItem, onDropItem }) => {
-  const containerItems = Array.isArray(items) ? items.filter((item) => item.CID === CID) : [];
+  const containerItems = items.filter(item => item.CID === CID);
   const [isItemFormOpen, setIsItemFormOpen] = useState(false);
 
   const handleAddItem = (newItem) => {
@@ -31,6 +31,14 @@ const Container = ({ title, items, CID, setItems, handleDeleteContainer, onDelet
     }),
   });
 
+  const [{ isDragging }, drag] = useDrag({
+    type: 'CONTAINER',
+    item: { CID, type: 'CONTAINER' },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  });
+
   return (
     <Box
       bg={isOver ? 'gray.200' : 'gray.100'}
@@ -41,6 +49,7 @@ const Container = ({ title, items, CID, setItems, handleDeleteContainer, onDelet
       position="relative"
       minWidth="15rem"
       ref={drop}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <CloseButton
         position="absolute"
@@ -49,11 +58,11 @@ const Container = ({ title, items, CID, setItems, handleDeleteContainer, onDelet
         size="sm"
         onClick={() => handleDeleteContainer(CID)}
       />
-      <Text fontSize="lg" fontWeight="bold" mb="2">
+      <Text fontSize="lg" fontWeight="bold" mb="2" ref={drag}>
         {title}
       </Text>
-      {containerItems.map((item) => (
-        <Item key={item.id} item={item} onDelete={onDeleteItem} />  
+      {containerItems.map(item => (
+        <Item key={item.id} item={item} onDelete={onDeleteItem} />
       ))}
       <Button size="sm" mt="2" onClick={handleOpenItemForm}>
         Add item
